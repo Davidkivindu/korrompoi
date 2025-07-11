@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Payment Receipt</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .receipt-card {
+      background: #ffffff;
+      padding: 25px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    .receipt-card h2 {
+      color: #28a745;
+      margin-bottom: 10px;
+    }
+    .receipt-details {
+      text-align: left;
+      margin-bottom: 20px;
+      border-top: 1px dashed #ccc;
+      border-bottom: 1px dashed #ccc;
+      padding: 10px 0;
+    }
+    .receipt-details p {
+      margin: 8px 0;
+      font-size: 16px;
+    }
+    .note {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+      padding: 10px 15px;
+      border-radius: 5px;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+    .btn-group {
+      margin-top: 15px;
+    }
+    .btn {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 5px;
+      transition: background-color 0.3s ease;
+    }
+    .btn:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="receipt-card" id="receiptCard">
+    <h2>Payment Details</h2>
+    <div class="receipt-details" id="receiptDetails">
+      <!-- Payment details will load here -->
+    </div>
+    <div class="note">
+      Note: Please forward this message to the recipient’s email.
+    </div>
+    <div class="btn-group">
+      <button class="btn" onclick="copyToClipboard()">Copy to Email</button>
+      <button class="btn" onclick="forwardToGmail()">Forward to Gmail</button>
+      <button class="btn" onclick="closeReceipt()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    // Load details from sessionStorage
+    const name = sessionStorage.getItem("name");
+    const phone = sessionStorage.getItem("phone");
+    const amount = sessionStorage.getItem("amount");
+    const date = new Date().toLocaleString();
+
+    // Display details
+    if (name && phone && amount) {
+      const receiptText = `
+Payment Details
+
+Date: ${date}
+Recipient: ${name}
+Phone: ${phone}
+Amount: ${amount}
+`;
+      document.getElementById("receiptDetails").innerHTML = `
+        <p><strong>Date:</strong> ${date}</p>
+        <p><strong>Recipient:</strong> ${name}</p>
+        <p><strong>Phone:</strong> ${phone}</p>
+        <p><strong>Amount:</strong> ${amount}</p>
+      `;
+      sessionStorage.setItem("receipt", receiptText);
+    } else {
+      document.getElementById("receiptDetails").innerHTML = "<p>No payment details found.</p>";
+    }
+
+    function copyToClipboard() {
+      const receiptText = sessionStorage.getItem("receipt");
+      navigator.clipboard.writeText(receiptText).then(() => {
+        alert("Receipt copied! You can now paste it in an email.");
+      });
+    }
+
+    function forwardToGmail() {
+      const receiptText = encodeURIComponent(sessionStorage.getItem("receipt"));
+      const subject = encodeURIComponent("Payment Confirmation");
+      const gmailURL = `https://mail.google.com/mail/?view=cm&fs=1&tf=1&su=${subject}&body=${receiptText}`;
+      window.open(gmailURL, "_blank");
+    }
+
+    function closeReceipt() {
+      window.location.href = "index.html";
+    }
+  </script>
+
+</body>
+</html>
